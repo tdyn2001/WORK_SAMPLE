@@ -1,0 +1,79 @@
+@startuml
+skinparam linetype ortho
+hide circle
+
+
+package UserDB {
+  entity "users" {
+    id: ObjectId <<PK>>
+    email: text
+    password: text
+    phone_number: text
+    name: text
+    status: <<ACTIVE | INACTIVE>>
+    --
+    created_at: timestamp
+    updated_at: timestamp
+  }
+}
+
+package ImageDB {
+ entity "images" {
+    id: ObjectId <<PK>>
+    image: base64Data
+    annotations: JSONArray<{coordinate: {x,y}, r: number}>
+    --
+    created_at: timestamp
+    updated_at: timestamp
+  }
+}
+
+package ChatDB {
+ entity "ClientConnections" {
+    id: ObjectId <<PK>>
+    user_id: ObjectId
+    connectionId: text
+    status: <<ACTIVE | INACTIVE>>
+    --
+    created_at: timestamp
+    updated_at: timestamp
+  }
+  entity "topics" {
+    id: ObjectId <<PK>>
+    name: text
+    image: ObjectId
+    status: <<ACTIVE | CLOSE>>
+    start_by: ObjectId
+    --
+    created_at: timestamp
+    updated_at: timestamp
+  }
+  entity "topic_subscribes" {
+    id: ObjectId <<PK>>
+    topic_id: ObjectId
+    user_id: ObjectId
+    status: <<SUBSCRIBE | UNSUBSCRIBE>>
+    --
+    created_at: timestamp
+    updated_at: timestamp
+  }
+  entity "topic_contents" {
+    id: ObjectId <<PK>>
+    topic_id: ObjectId
+    user_id: ObjectId
+    content: text
+    type: <<IMAGE | TEXT | DOCUMENT>>
+    status: <<ACTIVE | DELETED>>
+    --
+    created_at: timestamp
+    updated_at: timestamp
+  }
+  topics ||-- images
+  users }|--||  topic_subscribes
+  topics }|--||  topic_subscribes
+  topics }|--||  topic_contents
+  topics ||--||  users
+  users }|--||  ClientConnections
+}
+
+@enduml
